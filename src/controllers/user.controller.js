@@ -3,6 +3,7 @@ import {ApiError} from "../utils/ApiError.js"
 import {ApiResponse} from "../utils/ApiResponse.js"
 import {User} from "../models/user.model.js"
 import {uploadOnCloudinary} from "../utils/cloudinary.js"
+import { ValidateEmail } from "../utils/validation.js"
 const registerUser =asyncHandler( async (req, res) => {
     //get user detail
     const {fullName,email,username,password}=req.body
@@ -14,6 +15,10 @@ const registerUser =asyncHandler( async (req, res) => {
     }
 
     //validation: mainly for email :todo
+    const isemail=ValidateEmail(email);
+    if(!isemail){
+        throw new ApiError(400,"enter valid email")
+    }
 
     // check if user already exists
     const existedUser= await User.findOne({
