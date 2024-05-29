@@ -16,7 +16,16 @@ const uploadOnCloudinary= async (localFilePath)=>{
         const response=await cloudinary.uploader.upload(localFilePath,{
             resource_type: "auto"
         })
-        console.log("file uploaded in cloudinary",response.url)
+       // console.log("deleting")
+        fs.unlinkSync(localFilePath);
+    //     fs.unlink(localFilePath, (err) => {
+    //         if (err) {
+    //             console.log("failed to delete local image:"+err);
+    //         } else {
+    //             console.log('successfully deleted local image');                                
+    //         }
+    // });
+        //console.log("file uploaded in cloudinary",response)
         return response.url;
     }
     catch(error){

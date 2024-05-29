@@ -19,7 +19,7 @@ const userSchema= new Schema({
         trim: true,
         
     },
-    fullname:{
+    fullName:{
         type: String,
         required: true,
         trim: true,
@@ -27,7 +27,7 @@ const userSchema= new Schema({
     },
     avatar:{
         type: String,
-        requried: true
+        required: true
         
     },
     coverImage:{
@@ -39,7 +39,7 @@ const userSchema= new Schema({
     }],
     password:{
         type: String,
-        requried: [true,"password is requried"]
+        required: [true,"password is required"]
     }
 }, {timestamps: true})
 
