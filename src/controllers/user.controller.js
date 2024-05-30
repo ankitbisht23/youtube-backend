@@ -5,6 +5,7 @@ import {uploadOnCloudinary} from "../utils/cloudinary.js"
 import { ApiResponse } from "../utils/ApiResponse.js";
 import jwt from "jsonwebtoken"
 import mongoose from "mongoose";
+import { ValidateEmail } from "../utils/validation.js";
 
 
 const generateAccessAndRefereshTokens = async(userId) =>{
@@ -43,6 +44,10 @@ const registerUser = asyncHandler( async (req, res) => {
         [fullName, email, username, password].some((field) => field?.trim() === "")
     ) {
         throw new ApiError(400, "All fields are required")
+    }
+
+    if(!ValidateEmail(email)){
+        throw new ApiError(400, "Invalid email")
     }
 
     const existedUser = await User.findOne({
