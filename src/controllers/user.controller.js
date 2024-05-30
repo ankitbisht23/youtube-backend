@@ -1,11 +1,12 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
 import {ApiError} from "../utils/ApiError.js"
 import { User} from "../models/user.model.js"
-import {uploadOnCloudinary} from "../utils/cloudinary.js"
+import {deleteFromCloudinary, uploadOnCloudinary} from "../utils/cloudinary.js"
 import { ApiResponse } from "../utils/ApiResponse.js";
 import jwt from "jsonwebtoken"
 import mongoose from "mongoose";
 import { ValidateEmail } from "../utils/validation.js";
+import { extractPublicIdFromUrl } from "../utils/getPublicID.js";
 
 
 const generateAccessAndRefereshTokens = async(userId) =>{
@@ -299,7 +300,7 @@ const updateUserAvatar = asyncHandler(async(req, res) => {
     }
 
     //TODO: delete old image - assignment
-
+    const oldUrl=req.user?.avatar
     const avatar = await uploadOnCloudinary(avatarLocalPath)
 
     if (!avatar.url) {
@@ -316,6 +317,14 @@ const updateUserAvatar = asyncHandler(async(req, res) => {
         },
         {new: true}
     ).select("-password")
+
+    
+    if(oldUrl){
+        const publicId=extractPublicIdFromUrl(oldUrl)
+        console.log(publicId)
+        await deleteFromCloudinary(publicId);
+       // console.log("on delete",deleted);
+    }
 
     return res
     .status(200)
@@ -337,9 +346,12 @@ const updateUserCoverImage = asyncHandler(async(req, res) => {
     const coverImage = await uploadOnCloudinary(coverImageLocalPath)
 
     if (!coverImage.url) {
-        throw new ApiError(400, "Error while uploading on avatar")
+        throw new ApiError(400, "Error while uploading on coverImage")
         
     }
+
+    const oldUrl=req.user?.coverImage;
+    
 
     const user = await User.findByIdAndUpdate(
         req.user?._id,
@@ -350,6 +362,13 @@ const updateUserCoverImage = asyncHandler(async(req, res) => {
         },
         {new: true}
     ).select("-password")
+
+    if(oldUrl){
+        const publicId=extractPublicIdFromUrl(oldUrl)
+        console.log(publicId)
+        const deleted= await deleteFromCloudinary(publicId);
+       // console.log("on delete",deleted);
+    }
 
     return res
     .status(200)
